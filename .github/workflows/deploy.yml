@@ -84,6 +84,7 @@ jobs:
           task-definition: ${{ steps.render.outputs.task-definition }}
           cluster: ${{ env.ECS_CLUSTER }}
           service: ${{ env.ECS_SERVICE }}
+          desired-count: 1 # the service stack starts at 0 tasks until the first real image exists
           wait-for-service-stability: true
           wait-for-minutes: 15
 

@@ -36,12 +36,16 @@ The service uses the deployment circuit breaker with rollback: a release whose t
 1. Create `SignalBench-Registry`, then `SignalBench-Network`.
 2. Create `SignalBench-Cert`. Read the validation record with `aws acm describe-certificate` and add it in **Namecheap → Advanced DNS** as a
    `CNAME`. The host is the record name without `.sholaayeni.xyz`. The stack finishes once ACM issues the certificate.
-3. Build and push a first image, tagged `bootstrap`, to the ECR repository.
-4. Create `SignalBench-Service` with `ImageUri` set to that image.
-5. In Namecheap, add `CNAME signalbench → <LoadBalancerDnsName output>`.
-6. Run `scripts/aws/create-deployer-key.sh`. It creates the deployer's access key and pipes it straight into the repo's Actions secrets, then sets the
+3. Create `SignalBench-Service` with `DesiredCount=0` and `ImageUri=<repository uri>:bootstrap`. The image doesn't need to exist while no tasks run.
+4. Run `scripts/aws/create-deployer-key.sh`. It creates the deployer's access key and pipes it straight into the repo's Actions secrets, then sets the
    `AWS_REGION`, `ECR_REPOSITORY`, `ECS_CLUSTER`, `ECS_SERVICE` and `APP_URL` variables.
-7. Push to `main`. From then on, every push deploys.
+5. In Namecheap, add `CNAME signalbench → <LoadBalancerDnsName output>`.
+6. Run the **Deploy** workflow. The first run builds the real image, registers it and scales the service to 1 task. From then on, every push to `main`
+   deploys.
+
+> **Stack updates after go-live.** GitHub Actions owns the running task definition and task count, so the service stack's own values go stale
+> (task definition `:1`, `DesiredCount=0`). Before updating `SignalBench-Service`, pass `DesiredCount=1` and the current image URI, or the update
+> scales the service to zero.
 
 ## Workflows
 
