@@ -1,0 +1,15 @@
+name: Refresh data
+
+# Market data is baked into the image, so fresh candles mean a new deploy.
+on:
+  schedule:
+    - cron: "15 2 * * *" # 02:15 UTC daily
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  redeploy:
+    uses: ./.github/workflows/deploy.yml
+    secrets: inherit
