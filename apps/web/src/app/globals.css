@@ -1,0 +1,347 @@
+@import "tailwindcss";
+
+/* ============================================================
+   SIGNALBENCH DESIGN SYSTEM
+   Ported from agentfloor (KEPT / TraderChamber spec, part A).
+   Dark only. Radius 0. One lime accent.
+   ============================================================ */
+
+@theme {
+  --font-heading: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-space-mono), ui-monospace, SFMono-Regular, monospace;
+
+  --color-paper: #0f0f0f;
+  --color-ink: #f1efe6;
+  --color-card: #181817;
+  --color-secondary: #252422;
+  --color-muted: #252422;
+  --color-accent: #2a2926;
+  --color-muted-foreground: #a7a59c;
+  --color-border: rgb(245 235 235 / 0.1);
+  --color-input: rgb(247 239 239 / 0.12);
+  --color-ring: rgb(203 253 66 / 0.5);
+  --color-gold: #cbfe42;
+  --color-gold-soft: #e9fb7f;
+  --color-bronze: #93c449;
+  --color-gilt: #f0c13e;
+  --color-destructive: #e6443d;
+  --color-blue: #1581ff;
+  --color-series-1: #3987e5;
+  --color-series-2: #d95926;
+  --color-series-3: #1a9e70;
+  --color-series-4: #c98500;
+
+  /* Square everything (spec A.5). Only rounded-full survives for the live dot. */
+  --radius-xs: 0;
+  --radius-sm: 0;
+  --radius-md: 0;
+  --radius-lg: 0;
+  --radius-xl: 0;
+  --radius-2xl: 0;
+  --radius-3xl: 0;
+
+  --animate-tc-live: tc-pulse 1.4s ease-in-out infinite;
+  --animate-tc-caret: tc-blink 1s step-end infinite;
+  --animate-tc-band-sweep: tc-band-sweep 8s linear infinite;
+  --animate-tc-rise: tc-rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+
+  --shadow-trader-card: 0 0 0 1px rgb(203 254 66 / 0.25), 0 0 60px rgb(203 254 66 / 0.3), 0 40px 90px rgb(0 0 0 / 0.55);
+  --shadow-header-scrolled: 0 8px 32px -12px rgb(0 0 0 / 0.55), 0 2px 8px -2px rgb(0 0 0 / 0.4);
+}
+
+:root {
+  /* Self-hosted through @fontsource (imported in layout.tsx). */
+  --font-space-grotesk: "Space Grotesk";
+  --font-space-mono: "Space Mono";
+  --paper: #0f0f0f;
+  --ink: #f1efe6;
+  --gold: #cbfe42;
+  --gold-06: rgb(204 255 68 / 0.06);
+  --gold-30: rgb(202 255 66 / 0.3);
+  --bronze: #93c449;
+  --gilt: #f0c13e;
+  --gradient-hero-glow: radial-gradient(ellipse 50% 50% at 50% 50%, rgb(203 254 66 / 0.14), transparent 70%);
+  --gradient-trader-card: linear-gradient(120deg, #181817 0%, #0f0f0f 45%, #0f0f0f 100%);
+  color-scheme: dark;
+}
+
+/* ============================================================
+   Background (spec A.4)
+   ============================================================ */
+html {
+  scrollbar-gutter: stable;
+}
+
+body {
+  background-color: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.5;
+  letter-spacing: -0.011em;
+  background-image:
+    radial-gradient(ellipse 80% 60% at 50% -10%, var(--gold-06), transparent 70%),
+    radial-gradient(ellipse 70% 50% at 100% 0%, rgb(147 196 73 / 0.04), transparent 70%);
+  background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--gold);
+  color: var(--paper);
+}
+
+:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+@layer utilities {
+  /*
+   * Grid (KEPT A4, refined): 44px minor lines + 176px major lines, lime "+"
+   * marks on every major intersection, vignetted toward the edges and drifting
+   * very slowly. Drawn on ::before so content is never masked.
+   */
+  .tc-grid,
+  .tc-grid-dark {
+    position: relative;
+    isolation: isolate;
+  }
+  .tc-grid::before,
+  .tc-grid-dark::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-size:
+      176px 176px,
+      176px 176px,
+      176px 176px,
+      44px 44px,
+      44px 44px;
+    background-position:
+      -88px -88px,
+      0 0,
+      0 0,
+      0 0,
+      0 0;
+    animation: tc-grid-drift 120s linear infinite;
+    mask-image: radial-gradient(ellipse 90% 80% at 50% 30%, #000 30%, rgb(0 0 0 / 0.5) 65%, transparent 100%);
+  }
+  .tc-grid::before {
+    background-image:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='176' height='176'%3E%3Cpath d='M83 88h11M88 83v11' stroke='%23cbfe42' stroke-opacity='.5' stroke-width='1'/%3E%3C/svg%3E"),
+      linear-gradient(rgb(204 255 68 / 0.075) 1px, transparent 1px), linear-gradient(90deg, rgb(204 255 68 / 0.075) 1px, transparent 1px),
+      linear-gradient(rgb(204 255 68 / 0.045) 1px, transparent 1px), linear-gradient(90deg, rgb(204 255 68 / 0.045) 1px, transparent 1px);
+  }
+  .tc-grid-dark::before {
+    background-image:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='176' height='176'%3E%3Cpath d='M83 88h11M88 83v11' stroke='%230f0f0f' stroke-opacity='.5' stroke-width='1'/%3E%3C/svg%3E"),
+      linear-gradient(rgb(15 15 15 / 0.2) 1px, transparent 1px), linear-gradient(90deg, rgb(15 15 15 / 0.2) 1px, transparent 1px),
+      linear-gradient(rgb(15 15 15 / 0.09) 1px, transparent 1px), linear-gradient(90deg, rgb(15 15 15 / 0.09) 1px, transparent 1px);
+    mask-image: none;
+  }
+  .tc-glow {
+    background: var(--gradient-hero-glow);
+  }
+  .tc-glow-strong {
+    background: radial-gradient(ellipse 50% 50% at 50% 50%, var(--gold-30), transparent);
+  }
+  .bg-trader-card {
+    background: var(--gradient-trader-card);
+  }
+  .tc-display {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 0.9;
+    text-transform: uppercase;
+  }
+  .tc-fade-x {
+    mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  }
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* ============================================================
+   Components (spec A.7)
+   ============================================================ */
+.tc-btn {
+  transition:
+    transform 0.16s ease-out,
+    background-color 0.2s,
+    border-color 0.2s,
+    color 0.2s,
+    box-shadow 0.2s;
+}
+.tc-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 0 rgb(15 15 15 / 0.9);
+}
+.tc-btn:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 0 0 rgb(15 15 15 / 0.9);
+}
+.tc-btn-outline:hover {
+  box-shadow: 0 6px 0 0 rgb(241 239 230 / 0.9);
+}
+.tc-btn-outline:active {
+  box-shadow: 0 2px 0 0 rgb(241 239 230 / 0.9);
+}
+.tc-btn-green:hover {
+  box-shadow: 0 6px 0 0 rgb(203 254 66 / 0.55);
+}
+.tc-btn-green:active {
+  box-shadow: 0 2px 0 0 rgb(203 254 66 / 0.55);
+}
+.tc-btn-ink:hover {
+  box-shadow: 0 6px 0 0 rgb(241 239 230 / 0.35);
+}
+.tc-btn-ink:active {
+  box-shadow: 0 2px 0 0 rgb(241 239 230 / 0.35);
+}
+.tc-btn:disabled {
+  transform: none;
+  box-shadow: none;
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.tc-btn .tc-arrow {
+  display: inline-block;
+  transition: transform 0.2s ease-out;
+}
+.tc-btn:hover .tc-arrow {
+  transform: translateX(5px);
+}
+/* ============================================================
+   Motion (spec A.8)
+   ============================================================ */
+@keyframes tc-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.25;
+  }
+}
+@keyframes tc-blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes tc-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes tc-band-sweep {
+  0% {
+    transform: translate(0);
+  }
+  100% {
+    transform: translate(560%);
+  }
+}
+@keyframes tc-grid-drift {
+  from {
+    background-position:
+      -88px -88px,
+      0 0,
+      0 0,
+      0 0,
+      0 0;
+  }
+  to {
+    background-position:
+      88px 88px,
+      176px 176px,
+      176px 176px,
+      176px 176px,
+      176px 176px;
+  }
+}
+
+.tc-live {
+  animation: tc-pulse 1.4s ease-in-out infinite;
+}
+.tc-caret {
+  animation: tc-blink 1s step-end infinite;
+}
+.tc-rise {
+  animation: tc-rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+.tc-band-sweep {
+  animation: tc-band-sweep 8s linear infinite;
+}
+
+/* Hero entrance stagger */
+.tc-d1 {
+  animation-delay: 0.38s;
+}
+.tc-d2 {
+  animation-delay: 0.56s;
+}
+.tc-d3 {
+  animation-delay: 0.68s;
+}
+
+.tc-stagger > * {
+  animation: tc-rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+.tc-stagger > *:nth-child(2) {
+  animation-delay: 80ms;
+}
+.tc-stagger > *:nth-child(3) {
+  animation-delay: 160ms;
+}
+.tc-stagger > *:nth-child(4) {
+  animation-delay: 240ms;
+}
+.tc-stagger > *:nth-child(5) {
+  animation-delay: 320ms;
+}
+.tc-stagger > *:nth-child(6) {
+  animation-delay: 400ms;
+}
+
+/* Scroll reveal: JS (useReveal) flips data-shown */
+.tc-reveal {
+  opacity: 0;
+  transform: translateY(26px);
+  transition:
+    opacity 850ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 850ms cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+.tc-reveal[data-shown="true"] {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  .tc-reveal {
+    opacity: 1;
+    transform: none;
+  }
+}
