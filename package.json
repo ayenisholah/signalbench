@@ -1,0 +1,42 @@
+{
+  "name": "signalbench",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Backtest trading signals with honest fills: 2 bps limit orders on a fixed UTC schedule, no chasing, real metrics.",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "fetch": "tsx scripts/fetch-candles.ts",
+    "backtest": "tsx scripts/run-backtests.ts",
+    "dev": "npm run dev -w @signalbench/web",
+    "build": "npm run build -w @signalbench/web",
+    "start": "npm run start -w @signalbench/web",
+    "lint": "eslint . --max-warnings=0",
+    "typecheck": "tsc --noEmit -p tsconfig.json && npm run typecheck -w @signalbench/web",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "verify": "npm run lint && npm run format:check && npm run typecheck && npm test && npm run build"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "@next/eslint-plugin-next": "^15.5.29",
+    "@types/node": "^22.20.5",
+    "eslint": "^9.39.5",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "globals": "^17.14.0",
+    "prettier": "^3.10.1",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.74.0",
+    "vitest": "^3.2.7"
+  }
+}

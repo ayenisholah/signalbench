@@ -1,0 +1,15 @@
+node_modules/
+.next/
+out/
+coverage/
+*.tsbuildinfo
+next-env.d.ts
+.env
+.env.*
+!.env.example
+.DS_Store
+# Fetched market data and generated runs are build artifacts
+data/candles/
+apps/web/data/
+# Private signal files are never committed
+signals/private/
