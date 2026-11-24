@@ -75,8 +75,11 @@ jobs:
           task-definition: task-definition.json
           container-name: ${{ env.CONTAINER_NAME }}
           image: ${{ steps.image.outputs.uri }}
+          # Fargate sets HOSTNAME to the task's hostname, and Next's standalone server binds to $HOSTNAME,
+          # which would hide it from the in-container health check on 127.0.0.1. Bind to all interfaces.
           environment-variables: |
             COMMIT_SHA=${{ github.sha }}
+            HOSTNAME=0.0.0.0
 
       # The service's deployment circuit breaker rolls back automatically if new tasks fail health checks.
       - uses: aws-actions/amazon-ecs-deploy-task-definition@a00d4d57ac0de1a99b39fe469f3d898d38717c2b # v2.6.4

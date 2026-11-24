@@ -95,6 +95,8 @@ Resources:
             - { ContainerPort: 3000, Protocol: tcp }
           Environment:
             - { Name: COMMIT_SHA, Value: !Ref CommitSha }
+            # Fargate overwrites HOSTNAME with the task hostname; Next binds to it, so pin all interfaces.
+            - { Name: HOSTNAME, Value: "0.0.0.0" }
           HealthCheck:
             Command: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3000/api/health >/dev/null || exit 1"]
             Interval: 30
