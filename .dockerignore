@@ -1,0 +1,17 @@
+**/node_modules
+**/.next
+**/out
+coverage
+.git
+.github
+infra
+docs
+data
+apps/web/data
+signals/private
+*.md
+!README.md
+.env
+.env.*
+Dockerfile
+.dockerignore
