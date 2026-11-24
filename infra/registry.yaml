@@ -1,0 +1,101 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  SignalBench registry: ECR repository for the web image and the least-privilege
+  IAM user GitHub Actions deploys with (the org SCP forbids GitHub OIDC).
+
+Parameters:
+  ServiceName:
+    Type: String
+    Default: signalbench-web
+  ClusterName:
+    Type: String
+    Default: signalbench
+
+Resources:
+  WebRepository:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: signalbench/web
+      ImageTagMutability: IMMUTABLE
+      ImageScanningConfiguration:
+        ScanOnPush: true
+      EncryptionConfiguration:
+        EncryptionType: AES256
+      LifecyclePolicy:
+        LifecyclePolicyText: |
+          {
+            "rules": [
+              {
+                "rulePriority": 1,
+                "description": "Keep the 15 most recent images",
+                "selection": { "tagStatus": "any", "countType": "imageCountMoreThan", "countNumber": 15 },
+                "action": { "type": "expire" }
+              }
+            ]
+          }
+      Tags:
+        - { Key: Project, Value: signalbench }
+        - { Key: Env, Value: prod }
+        - { Key: Owner, Value: ayenisholah }
+
+  GithubDeployer:
+    Type: AWS::IAM::User
+    Properties:
+      UserName: signalbench-github-deployer
+      Tags:
+        - { Key: Project, Value: signalbench }
+
+  GithubDeployerPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: signalbench-deploy
+      Users: [!Ref GithubDeployer]
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: EcrLogin
+            Effect: Allow
+            Action: ecr:GetAuthorizationToken
+            Resource: "*"
+          - Sid: PushWebImage
+            Effect: Allow
+            Action:
+              - ecr:BatchCheckLayerAvailability
+              - ecr:BatchGetImage
+              - ecr:CompleteLayerUpload
+              - ecr:DescribeImages
+              - ecr:GetDownloadUrlForLayer
+              - ecr:InitiateLayerUpload
+              - ecr:PutImage
+              - ecr:UploadLayerPart
+            Resource: !GetAtt WebRepository.Arn
+          - Sid: TaskDefinitions
+            Effect: Allow
+            Action:
+              - ecs:DescribeTaskDefinition
+              - ecs:RegisterTaskDefinition
+            Resource: "*"
+          - Sid: DeployService
+            Effect: Allow
+            Action:
+              - ecs:DescribeServices
+              - ecs:UpdateService
+            Resource: !Sub arn:${AWS::Partition}:ecs:${AWS::Region}:${AWS::AccountId}:service/${ClusterName}/${ServiceName}
+          - Sid: PassTaskRoles
+            Effect: Allow
+            Action: iam:PassRole
+            Resource:
+              - !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:role/SignalBench-TaskExecution
+              - !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:role/SignalBench-Task
+            Condition:
+              StringEquals:
+                iam:PassedToService: ecs-tasks.amazonaws.com
+
+Outputs:
+  RepositoryUri:
+    Value: !GetAtt WebRepository.RepositoryUri
+    Export: { Name: SignalBench-RepositoryUri }
+  RepositoryName:
+    Value: !Ref WebRepository
+  DeployerUserName:
+    Value: !Ref GithubDeployer

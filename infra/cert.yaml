@@ -1,0 +1,25 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  SignalBench TLS certificate, issued in the same region as the ALB. DNS is on
+  Namecheap, so validation is manual: add the CNAME this stack's certificate
+  shows (ACM DescribeCertificate) in Namecheap Advanced DNS. Stack creation
+  waits until the record resolves and ACM issues the certificate.
+
+Parameters:
+  DomainName:
+    Type: String
+    Default: signalbench.sholaayeni.xyz
+
+Resources:
+  Certificate:
+    Type: AWS::CertificateManager::Certificate
+    Properties:
+      DomainName: !Ref DomainName
+      ValidationMethod: DNS
+      Tags:
+        - { Key: Project, Value: signalbench }
+
+Outputs:
+  CertificateArn:
+    Value: !Ref Certificate
+    Export: { Name: SignalBench-CertificateArn }
