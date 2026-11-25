@@ -27,7 +27,9 @@ COPY . .
 ARG COMMIT_SHA=dev
 ARG SB_HISTORY_DAYS=365
 ENV COMMIT_SHA=${COMMIT_SHA} SB_HISTORY_DAYS=${SB_HISTORY_DAYS}
-RUN npm run fetch && npm run backtest && npm run build
+# A new value per build (CI passes the run id) keeps the layer cache from reusing old market data.
+ARG DATA_BUILD_ID=local
+RUN echo "data build ${DATA_BUILD_ID}" && npm run fetch && npm run backtest && npm run build
 
 # ---- runtime: standalone server only, non-root ----
 FROM node:${NODE_VERSION} AS runtime
