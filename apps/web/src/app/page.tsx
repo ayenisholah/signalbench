@@ -1,8 +1,17 @@
+import type { Metadata } from "next";
 import { Dashboard } from "@/components/dashboard/dashboard";
 import type { DashData } from "@/components/dashboard/types";
 import { loadAllRuns } from "@/lib/runs";
+import { DESCRIPTION, SITE_NAME, pageMetadata } from "@/lib/site";
 
 export const dynamic = "force-static";
+
+export const metadata: Metadata = pageMetadata({
+  title: `${SITE_NAME} · Backtest trading signals with honest fills`,
+  description: DESCRIPTION,
+  path: "/",
+  absoluteTitle: true,
+});
 
 const BENCHMARK = "buy-and-hold";
 const RECENT_TRADES = 10;

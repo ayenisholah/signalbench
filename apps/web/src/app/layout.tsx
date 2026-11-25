@@ -8,29 +8,52 @@ import "./globals.css";
 import { Header } from "@/components/shell/header";
 import { Footer } from "@/components/shell/footer";
 import { loadIndex } from "@/lib/runs";
-
-const SITE_URL = process.env.SITE_URL ?? "https://signalbench.sholaayeni.xyz";
-const DESCRIPTION =
-  "Backtest trading signals with honest fills: 2 bps limit orders on a fixed 4-hour UTC schedule, never chased. Return, Sharpe and drawdown for a 70/30 gold/BTC portfolio.";
+import { AUTHOR, DESCRIPTION, KEYWORDS, REPO_URL, SITE_NAME, SITE_URL, TAGLINE, THEME } from "@/lib/site";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: { default: "SignalBench · Honest fills, real metrics", template: "%s · SignalBench" },
+  title: { default: `${SITE_NAME} · ${TAGLINE}`, template: `%s · ${SITE_NAME}` },
   description: DESCRIPTION,
-  applicationName: "SignalBench",
-  authors: [{ name: "Shola Ayeni", url: "https://github.com/ayenisholah" }],
-  openGraph: { type: "website", siteName: "SignalBench", title: "SignalBench · Honest fills, real metrics", description: DESCRIPTION, url: SITE_URL },
-  twitter: { card: "summary", title: "SignalBench", description: DESCRIPTION },
-  alternates: { canonical: SITE_URL },
+  applicationName: SITE_NAME,
+  keywords: KEYWORDS,
+  authors: [AUTHOR],
+  creator: AUTHOR.name,
+  publisher: AUTHOR.name,
+  category: "finance",
+  formatDetection: { telephone: false, email: false, address: false },
+  openGraph: { type: "website", siteName: SITE_NAME, locale: "en_US", title: `${SITE_NAME} · ${TAGLINE}`, description: DESCRIPTION, url: "/" },
+  twitter: { card: "summary_large_image", title: `${SITE_NAME} · ${TAGLINE}`, description: DESCRIPTION },
 };
 
-export const viewport: Viewport = { themeColor: "#0f0f0f", colorScheme: "dark" };
+/** schema.org description of the app and its source, for search engines. */
+const JSON_LD = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  name: SITE_NAME,
+  url: SITE_URL,
+  description: DESCRIPTION,
+  applicationCategory: "FinanceApplication",
+  operatingSystem: "Any",
+  isAccessibleForFree: true,
+  offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+  author: { "@type": "Person", name: AUTHOR.name, url: AUTHOR.url },
+  isBasedOn: {
+    "@type": "SoftwareSourceCode",
+    name: SITE_NAME,
+    codeRepository: REPO_URL,
+    programmingLanguage: "TypeScript",
+    license: "https://opensource.org/licenses/MIT",
+  },
+};
+
+export const viewport: Viewport = { themeColor: THEME.paper, colorScheme: "dark" };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const index = await loadIndex();
   return (
     <html lang="en">
       <body className="flex min-h-screen flex-col">
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD).replace(/</g, "\\u003c") }} />
         <a
           href="#main"
           className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:bg-gold focus:px-4 focus:py-2 focus:font-mono focus:text-[12px] focus:uppercase focus:text-paper"

@@ -49,11 +49,14 @@ The service uses the deployment circuit breaker with rollback: a release whose t
 
 ## Workflows
 
-| Workflow           | Trigger                                      | Does                                                                                                                                       |
-| ------------------ | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| `ci.yml`           | Pull requests, pushes to non-`main` branches | Lint, format check, typecheck, tests, fetch + backtest + build, container build and smoke test                                             |
-| `deploy.yml`       | Push to `main`, manual                       | Runs CI's verify job, builds arm64, pushes to ECR, rolls out, waits for a stable service, then checks `/api/health` reports the new commit |
-| `refresh-data.yml` | Daily 02:15 UTC, manual                      | Calls `deploy.yml`, so the newest candles are baked into a fresh image                                                                     |
+| Workflow           | Trigger                                      | Does                                                                                                                                                               |
+| ------------------ | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `ci.yml`           | Pull requests, pushes to non-`main` branches | Lint, format check, typecheck, tests, fetch + backtest + build, container build and smoke test (health, pages, sitemap, robots, manifest, share image, CSP header) |
+| `deploy.yml`       | Push to `main`, manual                       | Runs CI's verify job, builds arm64, pushes to ECR, rolls out, waits for a stable service, then checks `/api/health` reports the new commit                         |
+| `refresh-data.yml` | Daily 02:15 UTC, manual                      | Calls `deploy.yml`, so the newest candles are baked into a fresh image                                                                                             |
+
+The site's absolute URL (canonical links, sitemap, share images) is fixed at build time from the `SITE_URL` build arg, which defaults to
+`https://signalbench.sholaayeni.xyz`. Pass `--build-arg SITE_URL=…` when building for another domain.
 
 Every action is pinned to a full commit SHA. Dependabot proposes updates weekly.
 

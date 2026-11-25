@@ -1,7 +1,11 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Section } from "@/components/ui/section";
 import { Display, Eyebrow, Lead } from "@/components/ui/typography";
 import { btn } from "@/components/ui/button-variants";
+
+// Next adds a noindex robots tag to 404 responses itself.
+export const metadata: Metadata = { title: "Not found" };
 
 export default function NotFound() {
   return (

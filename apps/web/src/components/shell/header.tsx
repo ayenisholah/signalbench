@@ -5,8 +5,6 @@ import { cn } from "@/lib/utils";
 import { day } from "@/lib/format";
 import { NavLinks } from "./nav-links";
 
-export const REPO_URL = "https://github.com/ayenisholah/signalbench";
-
 export function Wordmark() {
   return (
     <Link href="/" className="group flex items-center gap-3" aria-label="SignalBench home">

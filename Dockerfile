@@ -26,7 +26,9 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 ARG COMMIT_SHA=dev
 ARG SB_HISTORY_DAYS=365
-ENV COMMIT_SHA=${COMMIT_SHA} SB_HISTORY_DAYS=${SB_HISTORY_DAYS}
+# Absolute URL used for canonical links, the sitemap and Open Graph images. Pages are prerendered, so it is fixed at build time.
+ARG SITE_URL=https://signalbench.sholaayeni.xyz
+ENV COMMIT_SHA=${COMMIT_SHA} SB_HISTORY_DAYS=${SB_HISTORY_DAYS} SITE_URL=${SITE_URL}
 # A new value per build (CI passes the run id) keeps the layer cache from reusing old market data.
 ARG DATA_BUILD_ID=local
 RUN echo "data build ${DATA_BUILD_ID}" && npm run fetch && npm run backtest && npm run build

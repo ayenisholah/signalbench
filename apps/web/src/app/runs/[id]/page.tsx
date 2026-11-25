@@ -10,6 +10,7 @@ import { TabNav } from "@/components/ui/segmented";
 import { MonthlyBars } from "@/components/charts/charts";
 import { day, int, money, pct, price, qty, ratio, signClass, utc } from "@/lib/format";
 import { WINDOW_KEYS, loadIndex, loadRun, type WindowKey } from "@/lib/runs";
+import { pageMetadata } from "@/lib/site";
 
 export const dynamicParams = false;
 
@@ -22,7 +23,10 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const { id } = await params;
   const index = await loadIndex();
   const run = index.runs.find((r) => r.id === id);
-  return run ? { title: run.name, description: run.description } : {};
+  if (!run) return {};
+  const m = run.windows.all;
+  const description = `${run.description} Full period: ${pct(m.totalReturn)} return, Sharpe ${ratio(m.sharpe)}, max drawdown ${pct(m.maxDrawdown, 1, false)}, ${pct(m.fillRate, 0, false)} of limit orders filled.`;
+  return pageMetadata({ title: run.name, description, path: `/runs/${run.id}`, type: "article" });
 }
 
 const WINDOW_LABEL: Record<WindowKey, string> = { "30d": "30 days", "90d": "90 days", "1y": "1 year", all: "All" };

@@ -3,15 +3,17 @@ import { Card, CardMeta } from "@/components/ui/card";
 import { PageHeader, Section } from "@/components/ui/section";
 import { DataTable } from "@/components/ui/table";
 import { Display, Eyebrow } from "@/components/ui/typography";
-import { REPO_URL } from "@/components/shell/header";
+import { DEFAULT_SHARE_IMAGE, REPO_URL, pageMetadata } from "@/lib/site";
 import { day, int, pct } from "@/lib/format";
 import { loadIndex, type Market } from "@/lib/runs";
 import { cn, pad } from "@/lib/utils";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Methodology",
   description: "How SignalBench simulates limit-order fills, computes Sharpe and drawdown, and where the numbers can mislead.",
-};
+  path: "/methodology",
+  image: DEFAULT_SHARE_IMAGE,
+});
 
 function Rule({ n, title, children }: { n: number; title: string; children: React.ReactNode }) {
   return (

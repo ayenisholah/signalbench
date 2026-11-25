@@ -3,6 +3,29 @@
   "version": "0.1.0",
   "private": true,
   "description": "Backtest trading signals with honest fills: 2 bps limit orders on a fixed UTC schedule, no chasing, real metrics.",
+  "keywords": [
+    "backtesting",
+    "trading-signals",
+    "limit-orders",
+    "fill-model",
+    "sharpe-ratio",
+    "bitcoin",
+    "paxg",
+    "nextjs",
+    "typescript"
+  ],
+  "homepage": "https://signalbench.sholaayeni.xyz",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ayenisholah/signalbench.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ayenisholah/signalbench/issues"
+  },
+  "author": {
+    "name": "Shola Ayeni",
+    "url": "https://github.com/ayenisholah"
+  },
   "license": "MIT",
   "type": "module",
   "engines": {

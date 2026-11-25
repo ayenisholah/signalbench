@@ -59,9 +59,17 @@ jobs:
       - name: Smoke test the image
         run: |
           docker run -d --name sb -p 3000:3000 signalbench/web:ci
+          up=0
           for i in $(seq 1 30); do
-            if curl -fsS http://127.0.0.1:3000/api/health; then exit 0; fi
+            if curl -fsS http://127.0.0.1:3000/api/health; then up=1; break; fi
             sleep 1
           done
-          docker logs sb
-          exit 1
+          if [ "$up" != 1 ]; then docker logs sb; exit 1; fi
+          echo
+          # Pages and the metadata routes (sitemap, robots, manifest, share image) must all render in the container.
+          for path in / /methodology /robots.txt /sitemap.xml /manifest.webmanifest /opengraph-image; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' "http://127.0.0.1:3000$path")
+            echo "$path $code"
+            if [ "$code" != 200 ]; then docker logs sb; exit 1; fi
+          done
+          curl -fsSI http://127.0.0.1:3000/ | grep -qi '^content-security-policy:' || { echo "missing CSP header"; exit 1; }
